@@ -1,3 +1,4 @@
+
 # IOC / Security Alert Detection & Investigation
 ### Solo College Cybersecurity SOC Lab with Wazuh SIEM & CyberSOC Shield
 
@@ -66,11 +67,17 @@ It automatically launches the telemetry engine in the background and opens your 
 👉 **`http://localhost:5050`**
 
 From this web console, you can:
-- **Live SOC Monitor:** View real-time RAM usage, top monitored processes, sensor health tags, and active alerts.
+- **Live SOC Monitor:** Slidable carousels for physical RAM usage, laptop boot time, active processes, and active TCP network sockets.
+- **Live Activity Sentinel:** Real-time continuous audit trail tracking active foreground windows and TCP network connections from laptop boot to shutdown.
+- **Malware Sandbox & Threat Analyzer:** Drag-and-drop file uploader calculating MD5/SHA256 hashes, Shannon entropy (0.0-8.0), heuristic Windows API scanning, threat score (0-100), and 1-click quarantine isolation.
 - **Attack Simulator Lab:** Trigger benign, non-destructive test attacks (C2 socket, dropper, ransomware note, Base64 PowerShell, brute-force login) with live terminal output.
 - **How It Protects You:** Explore the interactive 4-layer defense pipeline and comparative antivirus analysis.
 - **SIEM Rules & IOCs:** Inspect all custom detection rules and active threat indicators.
 - **Export SOC Dossier:** Download an automated JSON forensic incident dossier with a single click.
+
+### Cloud Deployment (Vercel Ready)
+Deploy directly to Vercel with 1 click:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/sahooanil498-lgtm/CyberSOC-Shield)
 
 ### Option 2: One-Click Interactive Terminal Launcher
 Double-click **`run_project.bat`** in the project root folder to launch the interactive terminal menu (Options 1–12).
