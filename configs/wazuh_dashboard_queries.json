@@ -1,0 +1,70 @@
+{
+  "dashboard_title": "SOC Lab - Threat Detection & IOC Monitoring Dashboard",
+  "refresh_interval": "10s",
+  "time_filter": "now-24h",
+  "views": [
+    {
+      "view_name": "All High & Critical Security Alerts",
+      "kql_query": "rule.level >= 8",
+      "fields": ["timestamp", "agent.name", "rule.id", "rule.level", "rule.description", "rule.mitre.id"],
+      "purpose": "Filters out background noise to display actionable security alerts."
+    },
+    {
+      "view_name": "IOC Detections View",
+      "kql_query": "rule.id: (100001 or 100002 or 100003 or 100004 or 100005 or 100006)",
+      "fields": ["timestamp", "agent.name", "rule.id", "rule.description", "data.win.eventdata.destinationIp", "data.win.eventdata.targetFilename", "data.win.eventdata.commandLine"],
+      "purpose": "Dedicated live feed for custom threat indicators and IOC matches."
+    },
+    {
+      "view_name": "Authentication & Brute-Force Monitoring",
+      "kql_query": "data.win.system.eventID: (4624 or 4625) or rule.groups: \"authentication_failed\"",
+      "fields": ["timestamp", "agent.name", "data.win.eventdata.targetUserName", "data.win.eventdata.ipAddress", "data.win.eventdata.subStatus"],
+      "purpose": "Tracks successful and failed logon attempts on Windows endpoints."
+    },
+    {
+      "view_name": "File Integrity Monitoring (FIM) Events",
+      "kql_query": "rule.groups: \"syscheck\" or syscheck.path: *",
+      "fields": ["timestamp", "agent.name", "syscheck.event", "syscheck.path", "syscheck.sha256_after", "syscheck.size_after"],
+      "purpose": "Monitors file additions, modifications, and deletions in real-time."
+    },
+    {
+      "view_name": "Sysmon Telemetry Activity",
+      "kql_query": "data.win.system.providerName: \"Microsoft-Windows-Sysmon\"",
+      "fields": ["timestamp", "data.win.system.eventID", "data.win.eventdata.image", "data.win.eventdata.commandLine", "data.win.eventdata.parentImage"],
+      "purpose": "Deep process and network telemetry from Microsoft Sysmon sensor."
+    }
+  ],
+  "visualizations": [
+    {
+      "type": "Metric",
+      "title": "Critical Threat Alerts (Level 12+)",
+      "query": "rule.level >= 12"
+    },
+    {
+      "type": "Pie Chart",
+      "title": "Alert Distribution by Severity",
+      "split_slices_by": "rule.level",
+      "palette": "Cool to Warm (Green to Red)"
+    },
+    {
+      "type": "Horizontal Bar Chart",
+      "title": "Top Triggered Security Rules",
+      "x_axis": "Count of events",
+      "y_axis": "rule.description.keyword",
+      "order": "descending",
+      "size": 5
+    },
+    {
+      "type": "Line Chart / Histogram",
+      "title": "Security Events Over Time",
+      "x_axis": "Date Histogram (Interval: Auto)",
+      "y_axis": "Count"
+    },
+    {
+      "type": "Data Table",
+      "title": "Active IOC Incident Triage Table",
+      "query": "rule.id: (100001 or 100002 or 100003 or 100004 or 100005 or 100006)",
+      "columns": ["timestamp", "agent.name", "rule.id", "rule.level", "rule.description"]
+    }
+  ]
+}

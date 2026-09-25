@@ -1,0 +1,20 @@
+# ==============================================================================
+# SOC LAB INDICATORS OF COMPROMISE (IOC) LIST
+# Format: <Indicator>:<Description>
+# Note: All IP addresses and domains are RFC-compliant test / documentation values.
+# ==============================================================================
+
+# 1. Suspicious / Threat Intel Test IPs (RFC 5737 Documentation Network)
+203.0.113.50:Simulated_Malicious_C2_Server
+198.51.100.25:Simulated_Phishing_Drop_Host
+
+# 2. Suspicious Test Filenames (Harmless naming patterns)
+invoice_malware_sim.exe:Simulated_Trojan_Dropper
+test_ransom_note.txt:Simulated_Ransomware_Note
+mimikatz_test_sim.exe:Simulated_Credential_Dumping_Tool
+
+# 3. Known Malicious Test File Hashes (SHA256)
+# Pre-computed hash of benign test string "MALWARE_TEST_SIMULATION_STRING_FOR_SOC_LAB_2026"
+4a1b025fbc77660c6753a798a69eef52467d302a281898114f6d4d161d713c23:Simulated_Malicious_Payload_Hash
+# Pre-computed hash of benign test file "C:\SOC_Lab_Test\eicar_test.txt"
+275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f:EICAR_Standard_AntiVirus_Test_File

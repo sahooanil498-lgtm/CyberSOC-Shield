@@ -1,0 +1,24 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# System and audit runtime logs
+logs/*.jsonl
+logs/*.log
+*.tmp
+
+# Operating System Files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# IDE / Editor settings
+.vscode/
+.idea/

@@ -1,0 +1,61 @@
+<!--
+  Sysmon Configuration for College SOC Lab
+  Based on SwiftOnSecurity baseline, customized for educational IOC & telemetry detection.
+  Captures: Process Creation (SHA256, CommandLine), Network Connections, File Creation, and Tampering.
+-->
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>md5,sha256</HashAlgorithms>
+  <CheckRevocation/>
+  <EventFiltering>
+
+    <!-- EVENT ID 1: Process Creation -->
+    <RuleGroup name="ProcessCreation" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <!-- Exclude noisy benign background noise if needed -->
+      </ProcessCreate>
+      <ProcessCreate onmatch="include">
+        <!-- Log all command-line and process creations with full parentage and hashes -->
+        <Image condition="begin with">C:\</Image>
+      </ProcessCreate>
+    </RuleGroup>
+
+    <!-- EVENT ID 3: Network Connection -->
+    <RuleGroup name="NetworkConnection" groupRelation="or">
+      <NetworkConnect onmatch="include">
+        <!-- Log outbound network connections from common scripting engines -->
+        <Image condition="image">powershell.exe</Image>
+        <Image condition="image">cmd.exe</Image>
+        <Image condition="image">curl.exe</Image>
+        <Image condition="image">mshta.exe</Image>
+        <Image condition="image">cscript.exe</Image>
+        <Image condition="image">wscript.exe</Image>
+      </NetworkConnect>
+    </RuleGroup>
+
+    <!-- EVENT ID 7: Image Loaded (DLLs) - Excluded by default to save VM performance -->
+
+    <!-- EVENT ID 11: File Create -->
+    <RuleGroup name="FileCreate" groupRelation="or">
+      <FileCreate onmatch="include">
+        <!-- Log any file created inside the designated SOC lab test folder -->
+        <TargetFilename condition="begin with">C:\SOC_Lab_Test\</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+
+    <!-- EVENT ID 12, 13, 14: Registry Events -->
+    <RuleGroup name="RegistryEvents" groupRelation="or">
+      <RegistryEvent onmatch="include">
+        <!-- Monitor common persistence run keys -->
+        <TargetObject condition="contains">\CurrentVersion\Run</TargetObject>
+      </RegistryEvent>
+    </RuleGroup>
+
+    <!-- EVENT ID 22: DNS Query -->
+    <RuleGroup name="DnsQuery" groupRelation="or">
+      <DnsQuery onmatch="include">
+        <QueryName condition="is not empty"/>
+      </DnsQuery>
+    </RuleGroup>
+
+  </EventFiltering>
+</Sysmon>

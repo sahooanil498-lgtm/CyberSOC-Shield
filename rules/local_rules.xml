@@ -1,0 +1,92 @@
+<!--
+  Custom Wazuh Detection Rules for College SOC Lab
+  Rule IDs: 100000 - 100010
+  Category: IOC Matching, Malicious Activity Simulation, and Anomaly Detection
+-->
+<group name="soc_lab,ioc_detection,windows,">
+
+  <!-- =========================================================================
+       RULE 100001: Network Connection to Malicious Test C2 IP Address
+       Triggered by Sysmon Event ID 3 (Network Connection)
+       ========================================================================= -->
+  <rule id="100001" level="12">
+    <if_sid>60103, 60100</if_sid>
+    <field name="win.eventdata.destinationIp">^203\.0\.113\.50$|^198\.51\.100\.25$</field>
+    <description>SOC-LAB ALERT [CRITICAL]: Outbound network connection to Known Malicious C2 Test IP ($(win.eventdata.destinationIp)) by process $(win.eventdata.image).</description>
+    <mitre>
+      <id>T1071.001</id>
+    </mitre>
+    <group>c2_communication,ioc_ip,</group>
+  </rule>
+
+  <!-- =========================================================================
+       RULE 100002: Process Executed Matching Known Malicious Test Hash
+       Triggered by Sysmon Event ID 1 (Process Create)
+       ========================================================================= -->
+  <rule id="100002" level="13">
+    <if_sid>60101, 60100</if_sid>
+    <field name="win.eventdata.hashes" type="pcre2">(?i)(4A1B025FBC77660C6753A798A69EEF52467D302A281898114F6D4D161D713C23|275A021BBFB6489E54D471899F7DB9D1663FC695EC2FE2A2C4538AABF651FD0F)</field>
+    <description>SOC-LAB ALERT [HIGH]: Execution of Process matching Known Malicious Test IOC Hash ($(win.eventdata.image)).</description>
+    <mitre>
+      <id>T1204.002</id>
+    </mitre>
+    <group>malware_execution,ioc_hash,</group>
+  </rule>
+
+  <!-- =========================================================================
+       RULE 100003: Suspicious Executable / Script Created in Lab Directory
+       Triggered by Sysmon Event ID 11 (File Create)
+       ========================================================================= -->
+  <rule id="100003" level="10">
+    <if_sid>60111, 60100</if_sid>
+    <field name="win.eventdata.targetFilename" type="pcre2">(?i)(invoice_malware_sim\.exe|mimikatz_test_sim\.exe|malicious_sim\.bat)</field>
+    <description>SOC-LAB ALERT [MEDIUM]: Suspicious test dropper or payload created on disk: $(win.eventdata.targetFilename).</description>
+    <mitre>
+      <id>T1105</id>
+    </mitre>
+    <group>file_creation,suspicious_file,</group>
+  </rule>
+
+  <!-- =========================================================================
+       RULE 100004: Suspicious Ransomware Note Creation (FIM / Syscheck)
+       Triggered when test_ransom_note.txt is dropped in monitored folder
+       ========================================================================= -->
+  <rule id="100004" level="11">
+    <if_sid>550, 554</if_sid>
+    <field name="file" type="pcre2">(?i)test_ransom_note\.txt</field>
+    <description>SOC-LAB ALERT [HIGH]: Potential Ransomware Indicator - Ransom note dropped: $(file).</description>
+    <mitre>
+      <id>T1486</id>
+    </mitre>
+    <group>ransomware_indicator,fim,</group>
+  </rule>
+
+  <!-- =========================================================================
+       RULE 100005: Suspicious Base64 Encoded PowerShell Command Execution
+       Triggered by Sysmon Event ID 1 or PowerShell logs
+       ========================================================================= -->
+  <rule id="100005" level="8">
+    <if_sid>60101, 60100</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)-enc(odedcommand)?\s+[A-Za-z0-9+/=]{20,}</field>
+    <description>SOC-LAB ALERT [MEDIUM]: Obfuscated or Base64 Encoded PowerShell command line detected.</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+    <group>powershell_abuse,defense_evasion,</group>
+  </rule>
+
+  <!-- =========================================================================
+       RULE 100006: Multiple Failed Windows Logins (Brute-Force Attack Simulation)
+       Triggered by Windows Security Event ID 4625 repeated 3+ times in 60s
+       ========================================================================= -->
+  <rule id="100006" level="10" frequency="3" timeframe="60">
+    <if_matched_sid>60122</if_matched_sid>
+    <same_field>win.eventdata.targetUserName</same_field>
+    <description>SOC-LAB ALERT [HIGH]: Potential Brute-Force authentication attack detected (3+ failed logins in 60 seconds against $(win.eventdata.targetUserName)).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>authentication_failed,brute_force,</group>
+  </rule>
+
+</group>
